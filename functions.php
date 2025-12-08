@@ -3661,4 +3661,113 @@ add_action('wp_footer', 'sato_debug_info', 999);
 // =============================================================================
 
 
+// =============================================================================
+// front-page.php 互換用ヘルパー関数
+// =============================================================================
+
+/**
+ * 電話番号取得（エイリアス）
+ */
+if (!function_exists('sato_get_phone_number')) {
+    function sato_get_phone_number() {
+        return sato_get_phone();
+    }
+}
+
+/**
+ * 創業年数を取得
+ */
+if (!function_exists('sato_get_years_in_business')) {
+    function sato_get_years_in_business() {
+        $established = get_theme_mod('sato_established', '');
+        if ($established) {
+            // 数字以外を除去して年数計算
+            $year = intval(preg_replace('/[^0-9]/', '', $established));
+            if ($year > 0) {
+                return date('Y') - $year;
+            }
+        }
+        return '20'; // デフォルト値
+    }
+}
+
+/**
+ * 保証年数を取得
+ */
+if (!function_exists('sato_get_warranty_years')) {
+    function sato_get_warranty_years() {
+        return get_theme_mod('sato_warranty_years', '10');
+    }
+}
+
+/**
+ * 汎用カスタム投稿取得
+ */
+if (!function_exists('sato_get_custom_posts')) {
+    function sato_get_custom_posts($post_type, $args = []) {
+        $defaults = [
+            'post_type'      => $post_type,
+            'posts_per_page' => 6,
+            'post_status'    => 'publish',
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        ];
+        $args = wp_parse_args($args, $defaults);
+        return new WP_Query($args);
+    }
+}
+
+/**
+ * 注目の施工実績を取得
+ */
+if (!function_exists('sato_get_featured_works')) {
+    function sato_get_featured_works($count = 6) {
+        // recommendフラグがあるものを優先、なければ最新
+        $args = [
+            'post_type'      => 'works',
+            'posts_per_page' => $count,
+            'post_status'    => 'publish',
+            'meta_query'     => [
+                'relation' => 'OR',
+                [
+                    'key'     => '_works_featured',
+                    'value'   => '1',
+                    'compare' => '='
+                ],
+                [
+                    'key'     => '_works_featured',
+                    'compare' => 'NOT EXISTS'
+                ]
+            ],
+            'orderby' => 'meta_value_num date', // featuredがあるものを優先したい場合など調整
+        ];
+        return new WP_Query($args);
+    }
+}
+
+/**
+ * 注目のFAQを取得
+ */
+if (!function_exists('sato_get_featured_faqs')) {
+    function sato_get_featured_faqs($count = 5) {
+        return new WP_Query([
+            'post_type'      => 'faq',
+            'posts_per_page' => $count,
+            'post_status'    => 'publish',
+            'meta_key'       => '_faq_is_featured',
+            'meta_value'     => '1',
+            'orderby'        => 'meta_value_num', // 表示順序(_faq_display_order)があればそちらを優先すべきですが、ここでは簡易的に
+        ]);
+    }
+}
+
+/**
+ * 星評価取得（HTMLを返す版）
+ */
+if (!function_exists('sato_get_rating_stars')) {
+    function sato_get_rating_stars($rating, $max = 5) {
+        // 第3引数をfalseにしてechoせずに値を返す
+        return sato_rating_stars($rating, $max, false);
+    }
+}
 
