@@ -2207,10 +2207,7 @@ if (!function_exists('sato_get_svg_icon')) {
     }
 }
 
-/**
- * アイコン取得のエイリアス関数
- */
-if (!function_exists('sato_icon')) {
+
 
 /**
  * アイコン取得のエイリアス関数
@@ -3770,4 +3767,5 @@ if (!function_exists('sato_get_rating_stars')) {
         return sato_rating_stars($rating, $max, false);
     }
 }
+
 
