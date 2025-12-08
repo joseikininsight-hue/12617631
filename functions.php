@@ -1520,260 +1520,164 @@ function sato_get_line_url() {
 }
 
 /**
- * SVGアイコンを取得 (sato_get_icon と sato_get_svg_icon の両方を定義して互換性を確保)
+ * SVGアイコンを取得
  */
-function sato_get_svg_icon($name, $size = 24) {
-    // クラス属性などを追加したい場合は第2引数を調整するか、呼び出し側で対応
-    // ここではシンプルにSVG文字列を返す
+function sato_get_svg_icon($name, $size = 24, $class = '') {
+    // 共通の属性（塗りつぶし用と線画用）
+    $base_class = 'icon ' . $class;
+    
+    // strokeタイプ（線画）
+    $attr_stroke = 'width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="' . esc_attr($base_class) . '"';
+    
+    // fillタイプ（塗りつぶし・ソーシャルアイコン等）
+    $attr_fill = 'width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="currentColor" class="' . esc_attr($base_class) . '"';
+
     $icons = [
-        'clock' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-        
-        'calendar' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-        
-        'home' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
-        
-        'check' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-
-        'check-circle' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-        
-        'paint-roller' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="18" height="6" rx="1"/><path d="M20 6h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-5"/><path d="M12 11v8a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-8"/></svg>',
-        
-        'brush' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>',
-
-        'shield' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-
-        'water' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.74 5.74c1.54 1.54 2.41 3.63 2.41 5.81a8.13 8.13 0 0 1-16.26 0c0-2.18.87-4.27 2.41-5.81L12 2.69z"/></svg>',
-
-        'images' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
-        
-        'yen' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L6 12h12L12 2z"/><path d="M6 14h12"/><path d="M6 18h12"/><path d="M12 14v8"/></svg>',
-        
-        'message-circle' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
-        
-        'help-circle' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-        
-        'list-ordered' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>',
-        
-        'building' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>',
-        
-        'newspaper' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg>',
-        
-        'close' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-        
-        'phone' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
-        
-        'mail' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
-        
-        'line' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>',
-        
-        'instagram' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>',
-        
-        'facebook' => '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
-        
-        'twitter' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
-        
-        'youtube' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
-        
-        'map-pin' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
-        
-        'award' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>',
-        
-        'users' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-        
-        'star' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-        
-        'star-outline' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-        
-        'quote' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="currentColor"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>',
-        
-        'image' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
-        
-        'chevron-right' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>',
-        
-        'chevron-down' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>',
-        
-        'arrow-right' => '<svg class="icon ' . esc_attr($class) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
-        
+        'clock'          => '<svg ' . $attr_stroke . '><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+        'calendar'       => '<svg ' . $attr_stroke . '><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+        'home'           => '<svg ' . $attr_stroke . '><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+        'check'          => '<svg ' . $attr_stroke . '><polyline points="20 6 9 17 4 12"/></svg>',
+        'check-circle'   => '<svg ' . $attr_stroke . '><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        'paint-roller'   => '<svg ' . $attr_stroke . '><rect x="2" y="3" width="18" height="6" rx="1"/><path d="M20 6h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-5"/><path d="M12 11v8a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-8"/></svg>',
+        'brush'          => '<svg ' . $attr_stroke . '><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>',
+        'shield'         => '<svg ' . $attr_stroke . '><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+        'water'          => '<svg ' . $attr_stroke . '><path d="M12 2.69l5.74 5.74c1.54 1.54 2.41 3.63 2.41 5.81a8.13 8.13 0 0 1-16.26 0c0-2.18.87-4.27 2.41-5.81L12 2.69z"/></svg>',
+        'images'         => '<svg ' . $attr_stroke . '><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+        'yen'            => '<svg ' . $attr_stroke . '><path d="M12 2L6 12h12L12 2z"/><path d="M6 14h12"/><path d="M6 18h12"/><path d="M12 14v8"/></svg>',
+        'message-circle' => '<svg ' . $attr_stroke . '><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+        'help-circle'    => '<svg ' . $attr_stroke . '><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+        'list-ordered'   => '<svg ' . $attr_stroke . '><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>',
+        'building'       => '<svg ' . $attr_stroke . '><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>',
+        'newspaper'      => '<svg ' . $attr_stroke . '><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg>',
+        'close'          => '<svg ' . $attr_stroke . '><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+        'phone'          => '<svg ' . $attr_stroke . '><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+        'mail'           => '<svg ' . $attr_stroke . '><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+        'map-pin'        => '<svg ' . $attr_stroke . '><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+        'arrow-right'    => '<svg ' . $attr_stroke . '><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+        'chevron-down'   => '<svg ' . $attr_stroke . '><polyline points="6 9 12 15 18 9"/></svg>',
+        'chevron-right'  => '<svg ' . $attr_stroke . '><polyline points="9 18 15 12 9 6"/></svg>',
+        'menu'           => '<svg ' . $attr_stroke . '><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+        'award'          => '<svg ' . $attr_stroke . '><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>',
+        'star'           => '<svg ' . $attr_fill . '><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+        'star-outline'   => '<svg ' . $attr_stroke . '><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+        'line'           => '<svg ' . $attr_fill . '><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>',
+        'instagram'      => '<svg ' . $attr_fill . '><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>',
+        'facebook'       => '<svg ' . $attr_fill . '><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+        'twitter'        => '<svg ' . $attr_fill . '><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+        'youtube'        => '<svg ' . $attr_fill . '><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
     ];
 
-    return isset($icons[$name]) ? $icons[$name] : '';
+    return $icons[$name] ?? '';
 }
 
-// 互換性のため古い関数も残す（SVG版を呼び出すラッパーとする）
+// 互換用ラッパー（もし古いコードが残っていた場合のため）
 function sato_get_icon($name, $class = '') {
-    return sato_get_svg_icon($name);
+    return sato_get_svg_icon($name, 24, $class);
 }
 
-/**
- * 評価の星を出力
- */
+// 施工実績取得関数
+function sato_get_works($args = []) {
+    $defaults = [
+        'post_type'      => 'works',
+        'posts_per_page' => 6,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'post_status'    => 'publish',
+    ];
+    $args = wp_parse_args($args, $defaults);
+    return new WP_Query($args);
+}
+
+// お客様の声取得関数
+function sato_get_voices($args = []) {
+    $defaults = [
+        'post_type'      => 'voice',
+        'posts_per_page' => 3,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'post_status'    => 'publish',
+    ];
+    $args = wp_parse_args($args, $defaults);
+    return new WP_Query($args);
+}
+
+// FAQ取得関数
+function sato_get_faqs($args = []) {
+    $defaults = [
+        'post_type'      => 'faq',
+        'posts_per_page' => -1,
+        'orderby'        => 'meta_value_num',
+        'meta_key'       => '_faq_display_order',
+        'order'          => 'ASC',
+        'post_status'    => 'publish',
+    ];
+    $args = wp_parse_args($args, $defaults);
+    return new WP_Query($args);
+}
+
+// お知らせ取得関数
+function sato_get_news($args = []) {
+    $defaults = [
+        'post_type'      => 'news',
+        'posts_per_page' => 5,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'post_status'    => 'publish',
+    ];
+    $args = wp_parse_args($args, $defaults);
+    return new WP_Query($args);
+}
+
+// 星評価表示関数
 function sato_rating_stars($rating, $max = 5) {
     $output = '<div class="rating-stars">';
     for ($i = 1; $i <= $max; $i++) {
-        if ($i <= $rating) {
-            $output .= sato_get_svg_icon('star');
-        } else {
-            $output .= sato_get_svg_icon('star-outline');
-        }
+        $icon = ($i <= $rating) ? 'star' : 'star-outline';
+        $output .= sato_get_svg_icon($icon);
     }
     $output .= '</div>';
     return $output;
 }
 
-/**
- * 抜粋の文字数を変更
- */
-function sato_excerpt_length($length) {
-    return 80;
-}
+function sato_excerpt_length($length) { return 80; }
 add_filter('excerpt_length', 'sato_excerpt_length');
 
-/**
- * 抜粋の省略記号を変更
- */
-function sato_excerpt_more($more) {
-    return '...';
-}
+function sato_excerpt_more($more) { return '...'; }
 add_filter('excerpt_more', 'sato_excerpt_more');
 
 /**
  * =============================================================================
- * ウィジェットエリア登録
+ * ウィジェット & AJAX & その他
  * =============================================================================
  */
 function sato_widgets_init() {
-    // サイドバー
-    register_sidebar([
-        'name'          => 'サイドバー',
-        'id'            => 'sidebar-1',
-        'description'   => 'ブログページなどのサイドバー',
-        'before_widget' => '<div id="%1$s" class="widget %2$s">',
-        'after_widget'  => '</div>',
-        'before_title'  => '<h3 class="widget-title">',
-        'after_title'   => '</h3>',
-    ]);
-
-    // フッターウィジェット1
-    register_sidebar([
-        'name'          => 'フッターウィジェット1',
-        'id'            => 'footer-1',
-        'description'   => 'フッター左側',
-        'before_widget' => '<div id="%1$s" class="widget %2$s">',
-        'after_widget'  => '</div>',
-        'before_title'  => '<h4 class="widget-title">',
-        'after_title'   => '</h4>',
-    ]);
-
-    // フッターウィジェット2
-    register_sidebar([
-        'name'          => 'フッターウィジェット2',
-        'id'            => 'footer-2',
-        'description'   => 'フッター中央',
-        'before_widget' => '<div id="%1$s" class="widget %2$s">',
-        'after_widget'  => '</div>',
-        'before_title'  => '<h4 class="widget-title">',
-        'after_title'   => '</h4>',
-    ]);
-
-    // フッターウィジェット3
-    register_sidebar([
-        'name'          => 'フッターウィジェット3',
-        'id'            => 'footer-3',
-        'description'   => 'フッター右側',
-        'before_widget' => '<div id="%1$s" class="widget %2$s">',
-        'after_widget'  => '</div>',
-        'before_title'  => '<h4 class="widget-title">',
-        'after_title'   => '</h4>',
-    ]);
+    register_sidebar(['name' => 'サイドバー', 'id' => 'sidebar-1']);
+    register_sidebar(['name' => 'フッター1', 'id' => 'footer-1']);
+    register_sidebar(['name' => 'フッター2', 'id' => 'footer-2']);
+    register_sidebar(['name' => 'フッター3', 'id' => 'footer-3']);
 }
 add_action('widgets_init', 'sato_widgets_init');
 
-/**
- * =============================================================================
- * Contact Form 7 設定
- * =============================================================================
- */
-// 自動Pタグ無効化
+// Contact Form 7
 add_filter('wpcf7_autop_or_not', '__return_false');
 
-// 送信完了後のリダイレクト用スクリプト
-function sato_cf7_redirect_script() {
-    if (!is_page('contact')) return;
-    ?>
-    <script>
-    document.addEventListener('wpcf7mailsent', function(event) {
-        location.href = '<?php echo home_url('/thanks/'); ?>';
-    }, false);
-    </script>
-    <?php
-}
-add_action('wp_footer', 'sato_cf7_redirect_script');
-
-/**
- * =============================================================================
- * AJAX処理
- * =============================================================================
- */
-
-/**
- * 施工実績をもっと読み込む
- */
+// AJAX
 function sato_load_more_works() {
     check_ajax_referer('sato_ajax_nonce', 'nonce');
-    
-    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
-    $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
-    $area = isset($_POST['area']) ? sanitize_text_field($_POST['area']) : '';
-    
-    $args = [
-        'post_type'      => 'works',
-        'posts_per_page' => 6,
-        'paged'          => $page,
-        'post_status'    => 'publish',
-    ];
-    
-    if ($category) {
-        $args['tax_query'][] = [
-            'taxonomy' => 'works_category',
-            'field'    => 'slug',
-            'terms'    => $category,
-        ];
-    }
-    
-    if ($area) {
-        $args['tax_query'][] = [
-            'taxonomy' => 'works_area',
-            'field'    => 'slug',
-            'terms'    => $area,
-        ];
-    }
-    
-    $query = new WP_Query($args);
-    
+    $paged = isset($_POST['page']) ? intval($_POST['page']) : 1;
+    $query = new WP_Query(['post_type' => 'works', 'paged' => $paged]);
     if ($query->have_posts()) {
         ob_start();
-        while ($query->have_posts()) {
-            $query->the_post();
-            get_template_part('template-parts/content', 'works-card');
-        }
-        wp_reset_postdata();
-        
-        wp_send_json_success([
-            'html'     => ob_get_clean(),
-            'has_more' => $query->max_num_pages > $page,
-        ]);
+        while ($query->have_posts()) { $query->the_post(); get_template_part('template-parts/content', 'works-card'); }
+        wp_send_json_success(['html' => ob_get_clean()]);
     } else {
-        wp_send_json_error(['message' => '施工実績がありません']);
+        wp_send_json_error();
     }
 }
 add_action('wp_ajax_sato_load_more_works', 'sato_load_more_works');
 add_action('wp_ajax_nopriv_sato_load_more_works', 'sato_load_more_works');
 
-/**
- * =============================================================================
- * パーマリンク設定
- * =============================================================================
- */
+// Rewrite Rules Flush
 function sato_flush_rewrite_rules() {
     sato_register_post_types();
     sato_register_taxonomies();
@@ -1781,304 +1685,10 @@ function sato_flush_rewrite_rules() {
 }
 register_activation_hook(__FILE__, 'sato_flush_rewrite_rules');
 
-/**
- * =============================================================================
- * セキュリティ・パフォーマンス設定
- * =============================================================================
- */
-
-// WordPressバージョン情報を削除
+// Security / Clean up
 remove_action('wp_head', 'wp_generator');
-
-// 絵文字関連のスクリプト削除
-remove_action('wp_head', 'print_emoji_detection_script', 7);
-remove_action('wp_print_styles', 'print_emoji_styles');
-
-// RSD/WLW リンク削除
-remove_action('wp_head', 'rsd_link');
-remove_action('wp_head', 'wlwmanifest_link');
-
-// 短縮リンク削除
-remove_action('wp_head', 'wp_shortlink_wp_head');
-
-// SVGアップロード許可
-function sato_allow_svg($mimes) {
-    $mimes['svg'] = 'image/svg+xml';
-    $mimes['svgz'] = 'image/svg+xml';
-    return $mimes;
-}
+function sato_allow_svg($mimes) { $mimes['svg'] = 'image/svg+xml'; return $mimes; }
 add_filter('upload_mimes', 'sato_allow_svg');
 
-// SVGサニタイズ
-function sato_sanitize_svg($data, $file, $filename, $mimes) {
-    $filetype = wp_check_filetype($filename, $mimes);
-    
-    if ('svg' === $filetype['ext']) {
-        $data['ext'] = 'svg';
-        $data['type'] = 'image/svg+xml';
-    }
-    
-    return $data;
-}
-add_filter('wp_check_filetype_and_ext', 'sato_sanitize_svg', 10, 4);
-
-/**
- * =============================================================================
- * 管理画面カスタマイズ
- * =============================================================================
- */
-
-// 管理画面フッターテキスト変更
-function sato_admin_footer_text() {
-    return '<span id="footer-thankyou">サトー建装 公式Webサイトテーマ</span>';
-}
-add_filter('admin_footer_text', 'sato_admin_footer_text');
-
-// ダッシュボードにカスタム投稿タイプの統計を追加
-function sato_dashboard_glance_items($items) {
-    $post_types = ['works', 'voice', 'faq', 'news'];
-    
-    foreach ($post_types as $type) {
-        $count = wp_count_posts($type);
-        if ($count) {
-            $published = intval($count->publish);
-            $post_type_obj = get_post_type_object($type);
-            $text = number_format_i18n($published) . ' ' . $post_type_obj->labels->name;
-            $items[] = sprintf('<a class="%1$s-count" href="edit.php?post_type=%1$s">%2$s</a>', $type, $text);
-        }
-    }
-    
-    return $items;
-}
-add_filter('dashboard_glance_items', 'sato_dashboard_glance_items');
-
-// カスタム投稿タイプのカラムカスタマイズ（施工実績）
-function sato_works_columns($columns) {
-    $new_columns = [];
-    foreach ($columns as $key => $value) {
-        if ($key === 'title') {
-            $new_columns[$key] = $value;
-            $new_columns['thumbnail'] = 'サムネイル';
-            $new_columns['works_category'] = 'カテゴリー';
-            $new_columns['works_area'] = 'エリア';
-            $new_columns['completion_date'] = '完成日';
-        } else {
-            $new_columns[$key] = $value;
-        }
-    }
-    return $new_columns;
-}
-add_filter('manage_works_posts_columns', 'sato_works_columns');
-
-function sato_works_custom_column($column, $post_id) {
-    switch ($column) {
-        case 'thumbnail':
-            if (has_post_thumbnail($post_id)) {
-                echo get_the_post_thumbnail($post_id, [60, 60]);
-            } else {
-                echo '—';
-            }
-            break;
-        case 'works_category':
-            $terms = get_the_terms($post_id, 'works_category');
-            if ($terms && !is_wp_error($terms)) {
-                $term_names = wp_list_pluck($terms, 'name');
-                echo implode(', ', $term_names);
-            } else {
-                echo '—';
-            }
-            break;
-        case 'works_area':
-            $terms = get_the_terms($post_id, 'works_area');
-            if ($terms && !is_wp_error($terms)) {
-                $term_names = wp_list_pluck($terms, 'name');
-                echo implode(', ', $term_names);
-            } else {
-                echo '—';
-            }
-            break;
-        case 'completion_date':
-            $date = get_post_meta($post_id, '_works_completion_date', true);
-            echo $date ? date_i18n('Y年n月', strtotime($date)) : '—';
-            break;
-    }
-}
-add_action('manage_works_posts_custom_column', 'sato_works_custom_column', 10, 2);
-
-// カスタム投稿タイプのカラムカスタマイズ（お客様の声）
-function sato_voice_columns($columns) {
-    $new_columns = [];
-    foreach ($columns as $key => $value) {
-        if ($key === 'title') {
-            $new_columns[$key] = $value;
-            $new_columns['client_info'] = 'お客様情報';
-            $new_columns['service_type'] = '施工内容';
-            $new_columns['rating'] = '評価';
-        } else {
-            $new_columns[$key] = $value;
-        }
-    }
-    return $new_columns;
-}
-add_filter('manage_voice_posts_columns', 'sato_voice_columns');
-
-function sato_voice_custom_column($column, $post_id) {
-    switch ($column) {
-        case 'client_info':
-            $area = get_post_meta($post_id, '_voice_client_area', true);
-            $initial = get_post_meta($post_id, '_voice_client_initial', true);
-            echo esc_html($area . ' ' . $initial);
-            break;
-        case 'service_type':
-            $type = get_post_meta($post_id, '_voice_service_type', true);
-            echo $type ? esc_html($type) : '—';
-            break;
-        case 'rating':
-            $rating = get_post_meta($post_id, '_voice_rating', true);
-            if ($rating) {
-                echo str_repeat('★', intval($rating)) . str_repeat('☆', 5 - intval($rating));
-            } else {
-                echo '—';
-            }
-            break;
-    }
-}
-add_action('manage_voice_posts_custom_column', 'sato_voice_custom_column', 10, 2);
-
-/**
- * =============================================================================
- * パンくずリスト生成
- * =============================================================================
- */
-function sato_breadcrumb() {
-    if (is_front_page()) return;
-    
-    $separator = '<span class="breadcrumb-separator">' . sato_get_svg_icon('chevron-right') . '</span>';
-    $home_text = 'ホーム';
-    
-    echo '<nav class="breadcrumb" aria-label="パンくずリスト">';
-    echo '<ol class="breadcrumb-list" itemscope itemtype="https://schema.org/BreadcrumbList">';
-    
-    // ホーム
-    echo '<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-    echo '<a href="' . home_url('/') . '" itemprop="item"><span itemprop="name">' . $home_text . '</span></a>';
-    echo '<meta itemprop="position" content="1" />';
-    echo '</li>';
-    
-    $position = 2;
-    
-    if (is_single()) {
-        $post_type = get_post_type();
-        
-        if ($post_type !== 'post') {
-            $post_type_obj = get_post_type_object($post_type);
-            echo $separator;
-            echo '<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-            echo '<a href="' . get_post_type_archive_link($post_type) . '" itemprop="item"><span itemprop="name">' . $post_type_obj->labels->name . '</span></a>';
-            echo '<meta itemprop="position" content="' . $position++ . '" />';
-            echo '</li>';
-        } else {
-            $categories = get_the_category();
-            if ($categories) {
-                echo $separator;
-                echo '<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-                echo '<a href="' . get_category_link($categories[0]->term_id) . '" itemprop="item"><span itemprop="name">' . $categories[0]->name . '</span></a>';
-                echo '<meta itemprop="position" content="' . $position++ . '" />';
-                echo '</li>';
-            }
-        }
-        
-        echo $separator;
-        echo '<li class="breadcrumb-item current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-        echo '<span itemprop="name">' . get_the_title() . '</span>';
-        echo '<meta itemprop="position" content="' . $position . '" />';
-        echo '</li>';
-        
-    } elseif (is_page()) {
-        global $post;
-        
-        if ($post->post_parent) {
-            $ancestors = array_reverse(get_post_ancestors($post->ID));
-            foreach ($ancestors as $ancestor) {
-                echo $separator;
-                echo '<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-                echo '<a href="' . get_permalink($ancestor) . '" itemprop="item"><span itemprop="name">' . get_the_title($ancestor) . '</span></a>';
-                echo '<meta itemprop="position" content="' . $position++ . '" />';
-                echo '</li>';
-            }
-        }
-        
-        echo $separator;
-        echo '<li class="breadcrumb-item current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-        echo '<span itemprop="name">' . get_the_title() . '</span>';
-        echo '<meta itemprop="position" content="' . $position . '" />';
-        echo '</li>';
-        
-    } elseif (is_post_type_archive()) {
-        $post_type_obj = get_post_type_object(get_post_type());
-        echo $separator;
-        echo '<li class="breadcrumb-item current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-        echo '<span itemprop="name">' . $post_type_obj->labels->name . '</span>';
-        echo '<meta itemprop="position" content="' . $position . '" />';
-        echo '</li>';
-        
-    } elseif (is_tax()) {
-        $term = get_queried_object();
-        $taxonomy = get_taxonomy($term->taxonomy);
-        
-        // 関連する投稿タイプのアーカイブリンク
-        if (!empty($taxonomy->object_type)) {
-            $post_type = $taxonomy->object_type[0];
-            $post_type_obj = get_post_type_object($post_type);
-            echo $separator;
-            echo '<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-            echo '<a href="' . get_post_type_archive_link($post_type) . '" itemprop="item"><span itemprop="name">' . $post_type_obj->labels->name . '</span></a>';
-            echo '<meta itemprop="position" content="' . $position++ . '" />';
-            echo '</li>';
-        }
-        
-        echo $separator;
-        echo '<li class="breadcrumb-item current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-        echo '<span itemprop="name">' . $term->name . '</span>';
-        echo '<meta itemprop="position" content="' . $position . '" />';
-        echo '</li>';
-        
-    } elseif (is_category()) {
-        $category = get_queried_object();
-        echo $separator;
-        echo '<li class="breadcrumb-item current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-        echo '<span itemprop="name">' . $category->name . '</span>';
-        echo '<meta itemprop="position" content="' . $position . '" />';
-        echo '</li>';
-        
-    } elseif (is_tag()) {
-        $tag = get_queried_object();
-        echo $separator;
-        echo '<li class="breadcrumb-item current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-        echo '<span itemprop="name">' . $tag->name . '</span>';
-        echo '<meta itemprop="position" content="' . $position . '" />';
-        echo '</li>';
-        
-    } elseif (is_search()) {
-        echo $separator;
-        echo '<li class="breadcrumb-item current">';
-        echo '<span>「' . get_search_query() . '」の検索結果</span>';
-        echo '</li>';
-        
-    } elseif (is_404()) {
-        echo $separator;
-        echo '<li class="breadcrumb-item current">';
-        echo '<span>ページが見つかりません</span>';
-        echo '</li>';
-    }
-    
-    echo '</ol>';
-    echo '</nav>';
-}
-
-/**
- * =============================================================================
- * テーマ初期化完了
- * =============================================================================
- */
-do_action('sato_theme_loaded');
+// Dashboard & Admin
+add_filter('admin_footer_text', function() { return 'サトー建装 公式テーマ'; });
