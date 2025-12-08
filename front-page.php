@@ -2,19 +2,27 @@
 /**
  * Front Page Template
  * サトー建装 公式Webサイトテーマ
- * * @package Sato_Kenso
+ * @package Sato_Kenso
  * @version 3.0.0
  */
 
 get_header();
 
-// カスタマイザー設定の取得
+// カスタマイザー設定の取得（テキスト系）
 $hero_catch1    = get_theme_mod('sato_hero_catch1', '住まいを守る、');
 $hero_catch2    = get_theme_mod('sato_hero_catch2', '職人の技術と想い。');
 $hero_subcatch  = get_theme_mod('sato_hero_subcatch', '国家資格 一級塗装技能士が施工する御殿場市の塗装専門店');
-$hero_image1    = get_theme_mod('sato_hero_image_1');
-$hero_image2    = get_theme_mod('sato_hero_image_2');
-$hero_image3    = get_theme_mod('sato_hero_image_3');
+
+// 画像URL（指定のものを使用）
+// ※カスタマイザーで設定がない場合は、指定のURLをデフォルトとして使用するロジックに変更
+$custom_img_id = get_theme_mod('sato_hero_image_1');
+if ($custom_img_id) {
+    $hero_bg_url = wp_get_attachment_image_url($custom_img_id, 'full');
+} else {
+    // 指定された画像URL
+    $hero_bg_url = 'https://satokens.jp/wp-content/uploads/2025/12/Gemini_Generated_Image_wzbnsjwzbnsjwzbn.png';
+}
+
 $service_areas  = get_theme_mod('sato_service_areas', "御殿場市\n裾野市\n三島市\n沼津市\n富士市\n富士宮市\n長泉町\n清水町");
 $area_note      = get_theme_mod('sato_area_note', 'その他、静岡県東部エリアもご対応可能です。まずはお気軽にお問い合わせください。');
 $google_map_url = get_theme_mod('sato_google_map', '');
@@ -24,50 +32,32 @@ $warranty_years = get_theme_mod('sato_warranty_years', '15');
 <main class="front-page">
 
     <section class="hero">
-        <div class="hero__slider" id="hero-slider">
-            <?php 
-            $hero_images = array_filter([$hero_image1, $hero_image2, $hero_image3]);
-            if (empty($hero_images)) {
-                // デフォルト画像（プレースホルダー）
-                echo '<div class="hero__slide" style="background-color: var(--color-primary-dark);"></div>';
-            } else {
-                foreach ($hero_images as $img_id) {
-                    $img_url = wp_get_attachment_image_url($img_id, 'hero');
-                    echo '<div class="hero__slide" style="background-image: url(' . esc_url($img_url) . ');"></div>';
-                }
-            }
-            ?>
-        </div>
-        
-        <div class="hero__overlay"></div>
-        
         <div class="hero__content animate-fade-in">
-            <h2 class="hero__catchphrase">
-                <span class="hero__catch-line"><?php echo esc_html($hero_catch1); ?></span>
-                <span class="hero__catch-line"><?php echo esc_html($hero_catch2); ?></span>
-            </h2>
-            <p class="hero__subcatch"><?php echo esc_html($hero_subcatch); ?></p>
-            
-            <div class="hero__badges">
-                <span class="badge badge--accent">地域密着</span>
-                <span class="badge badge--accent">完全自社施工</span>
-                <span class="badge badge--accent">一級塗装技能士</span>
-            </div>
-            
-            <div class="hero__cta">
-                <a href="<?php echo esc_url(home_url('/contact/')); ?>" class="btn btn--accent btn--xl">
-                    <?php echo sato_get_svg_icon('mail', 24); ?>
-                    <span>無料お見積り・ご相談</span>
-                </a>
-                <a href="#about" class="btn btn--outline-white btn--xl">
-                    <span>選ばれる理由を見る</span>
-                </a>
+            <div class="hero__content-inner">
+                <h2 class="hero__catchphrase">
+                    <span class="hero__catch-line"><?php echo esc_html($hero_catch1); ?></span>
+                    <span class="hero__catch-line"><?php echo esc_html($hero_catch2); ?></span>
+                </h2>
+                <p class="hero__subcatch"><?php echo esc_html($hero_subcatch); ?></p>
+                
+                <div class="hero__badges">
+                    <span class="badge badge--accent">地域密着</span>
+                    <span class="badge badge--accent">完全自社施工</span>
+                    <span class="badge badge--accent">一級塗装技能士</span>
+                </div>
+                
+                <div class="hero__cta">
+                    <a href="<?php echo esc_url(home_url('/contact/')); ?>" class="btn btn--accent btn--xl btn--shadow">
+                        <?php echo sato_get_svg_icon('mail', 24); ?>
+                        <span>無料お見積り・ご相談</span>
+                    </a>
+                    <p class="hero__cta-note">しつこい営業は一切いたしません</p>
+                </div>
             </div>
         </div>
-        
-        <div class="hero__scroll-indicator">
-            <span class="scroll-text">SCROLL</span>
-            <span class="scroll-line"></span>
+
+        <div class="hero__visual" style="background-image: url('<?php echo esc_url($hero_bg_url); ?>');">
+            <img src="<?php echo esc_url($hero_bg_url); ?>" alt="塗装職人の作業風景" class="sr-only">
         </div>
         
         <?php
@@ -80,14 +70,18 @@ $warranty_years = get_theme_mod('sato_warranty_years', '15');
         if ($news_query->have_posts()) :
         ?>
         <div class="hero__news-ticker">
-            <span class="news-ticker__label">NEWS</span>
-            <div class="news-ticker__content">
-                <?php while ($news_query->have_posts()) : $news_query->the_post(); ?>
-                <a href="<?php the_permalink(); ?>" class="news-ticker__item">
-                    <time datetime="<?php echo get_the_date('Y-m-d'); ?>"><?php echo get_the_date('Y.m.d'); ?></time>
-                    <span><?php the_title(); ?></span>
-                </a>
-                <?php endwhile; ?>
+            <div class="container-fluid">
+                <div class="news-ticker__inner">
+                    <span class="news-ticker__label">NEWS</span>
+                    <div class="news-ticker__content">
+                        <?php while ($news_query->have_posts()) : $news_query->the_post(); ?>
+                        <a href="<?php the_permalink(); ?>" class="news-ticker__item">
+                            <time datetime="<?php echo get_the_date('Y-m-d'); ?>"><?php echo get_the_date('Y.m.d'); ?></time>
+                            <span><?php the_title(); ?></span>
+                        </a>
+                        <?php endwhile; ?>
+                    </div>
+                </div>
             </div>
         </div>
         <?php endif; wp_reset_postdata(); ?>
@@ -139,6 +133,8 @@ $warranty_years = get_theme_mod('sato_warranty_years', '15');
         </div>
     </section>
 
+    <?php // 便宜上、以下に続きのセクションを省略なしで記載します ?>
+
     <section class="section" id="about">
         <div class="container">
             <div class="section__header text-center">
@@ -171,7 +167,7 @@ $warranty_years = get_theme_mod('sato_warranty_years', '15');
                             <?php echo wp_kses_post(wpautop($text)); ?>
                         </div>
                         
-                        <?php if ($i === 1) : // 1つ目の理由（自社施工）に追加バッジ ?>
+                        <?php if ($i === 1) : ?>
                         <ul class="reason-panel__points">
                             <li><?php echo sato_get_svg_icon('check', 16); ?> 中間マージンカット</li>
                             <li><?php echo sato_get_svg_icon('check', 16); ?> 責任施工</li>
@@ -179,7 +175,7 @@ $warranty_years = get_theme_mod('sato_warranty_years', '15');
                         </ul>
                         <?php endif; ?>
                         
-                        <?php if ($i === 4 && $warranty_years) : // 4つ目の理由（保証）にバッジ ?>
+                        <?php if ($i === 4 && $warranty_years) : ?>
                         <div class="warranty-badge">
                             <span class="warranty-badge__years"><?php echo esc_html($warranty_years); ?></span>
                             <span class="warranty-badge__text">年保証</span>
